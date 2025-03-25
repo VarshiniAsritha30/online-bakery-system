@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Bakery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background:white;
+        }
+
+        header {
+            background:lavender;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .products {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 200px;
+            background: lavender;
+            border-radius: 8px;
+        }
+
+        .product img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        button {
+            background:pink;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background:rosybrown;
+        }
+
+        .cart-container {
+            display: none;
+            position: fixed;
+            right: 20px;
+            top: 60px;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            width: 250px;
+            border-radius: 8px;
+        }
+
+        .cart-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .cart-container li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .cart-container button {
+            background:pink;
+            padding: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Delicious Bakery</h1>
+        <div class="cart">
+            <button onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+        </div>
+    </header>
+
+    <section class="products">
+        <div class="product" data-name="Chocolate Cake" data-price="15">
+            <img src="https://static.vecteezy.com/system/resources/previews/024/672/690/large_2x/cute-chocolate-cake-slice-with-line-food-bakery-cartoon-doodle-icon-illustration-vector.jpg" alt="Chocolate Cake">
+            <h2>Chocolate Cake</h2>
+            <p>$15</p>
+            <button onclick="addToCart('Chocolate Cake', 15)">Add to Cart</button>
+        </div>
+
+        <div class="product" data-name="Croissant" data-price="5">
+            <img src="https://img.freepik.com/premium-vector/cute-hand-drawn-croissant-color-image-croissant-croissant-cartoon-icon_118339-2284.jpg?w=2000" alt="Croissant">
+            <h2>Croissant</h2>
+            <p>$5</p>
+            <button onclick="addToCart('Croissant', 5)">Add to Cart</button>
+        </div>
+        <div class="product" data-name="Cookies" data-price="3">
+            <img src="https://png.pngtree.com/png-vector/20230816/ourlarge/pngtree-cute-chibi-oreo-cookies-with-cute-expressions-on-their-faces-clipart-vector-png-image_6983415.png" alt="Cookies">
+            <h2>Cookies</h2>
+            <p>$3</p>
+            <button onclick="addToCart('Cookies', 3)">Add to Cart</button>
+        </div>
+    </section>
+    <section class="products">
+        <div class="product" data-name="Muffin" data-price="7">
+            <img src="https://static.vecteezy.com/system/resources/previews/007/491/356/large_2x/cartoon-cute-cupcake-character-illustration-smiling-kawaii-dessert-vector.jpg" alt="Muffin">
+            <h2>Muffin</h2>
+            <p>$7</p>
+            <button onclick="addToCart('Muffin', 7)">Add to Cart</button>
+        </div>
+
+        <div class="product" data-name="ChesseCake" data-price="12">
+            <img src="https://img.freepik.com/premium-vector/cute-cheesecake-character-design-illustration_493925-2159.jpg" alt="ChesseCake">
+            <h2>CheeseCake</h2>
+            <p>$12</p>
+            <button onclick="addToCart('ChesseCake', 12)">Add to Cart</button>
+        </div>
+        <div class="product" data-name="Donouts" data-price="6">
+            <img src="https://static.vecteezy.com/system/resources/previews/008/132/072/original/stacked-donuts-cartoon-icon-illustration-food-and-drink-icon-concept-flat-cartoon-style-free-vector.jpg" alt="Donouts">
+            <h2>Donouts</h2>
+            <p>$6</p>
+            <button onclick="addToCart('Donouts', 6)">Add to Cart</button>
+        </div>
+    </section>
+
+    <div id="cart" class="cart-container">
+        <h2>Shopping Cart</h2>
+        <ul id="cart-items"></ul>
+        <p>Total: $<span id="cart-total">0</span></p>
+        <button onclick="checkout()">Checkout</button>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            let item = cart.find(product => product.name === name);
+            if (item) {
+                item.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartList = document.getElementById("cart-items");
+            let cartTotal = document.getElementById("cart-total");
+            let cartCount = document.getElementById("cart-count");
+
+            cartList.innerHTML = "";
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                let listItem = document.createElement("li");
+                listItem.innerHTML = `${item.name} x${item.quantity} - $${item.price * item.quantity}
+                    <button onclick="removeFromCart('${item.name}')">❌</button>`;
+                cartList.appendChild(listItem);
+            });
+
+            cartTotal.innerText = total;
+            cartCount.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCart();
+        }
+
+        function toggleCart() {
+            let cartContainer = document.getElementById("cart");
+            cartContainer.style.display = cartContainer.style.display === "block" ? "none" : "block";
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+            alert("Thank you for your order!");
+            cart = [];
+            updateCart();
+        }
+    </script>
+</body>
+</html>
